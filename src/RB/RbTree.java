@@ -9,14 +9,17 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
 
     String insertionTimeStr ="Hello\n", deletionTimeStr="Hello\n";
     int size = 0, height = 0;
-    RbNode<T> root = new RbNode<>(null, null, null, null);
+    RbNode<T> begin = new RbNode<>(null, null, null, null);
+    RbNode<T> root = new RbNode<>(begin, null, null, null);
     RbNode<T> leaf = new RbNode<>(root, null, null, null);
 
     public RbTree() {
-        root.parent = root;
+        begin.right = root;
+        begin.left = root;
         root.right = leaf;
         root.left = leaf;
         root.setColour(true);
+        leaf.setColour(true);
     }
 
     public void rotateRight(RbNode<T> node) {
@@ -58,7 +61,6 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
             } else if (node.compareTo(rbNode.getValue()) < 0) {
                 parent = rbNode;
                 rbNode = rbNode.left;
-                parent.left = rbNode;
             } else {
                 found = true;
                 break;
@@ -68,24 +70,38 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
             System.out.println(node + "was already inserted");
         } else if (size == 0) {
             root.setValue(node);
-            size++;
+            size = 1;
+            height = 1;
             System.out.println("Insert in RB: " + node);
         } else {
+            int depth = 1;
             rbNode = new RbNode<>(parent, leaf, leaf, node);
+            if (node.compareTo(parent.getValue()) > 0) parent.right = rbNode;
+            else parent.left = rbNode;
             RbNode<T> ancestor;
-            while (rbNode != root) {
+            while (rbNode != root && parent != root) {
                 ancestor = parent.parent;
-                if (parent.isBlack()) break;
+                if (parent.isBlack()) {
+                    while (rbNode != root) {
+                        depth++;
+                        rbNode = rbNode.parent;
+                    }
+                }
                 else if (!ancestor.left.isBlack() && !ancestor.right.isBlack()) {
                     ancestor.right.setColour(true);
                     ancestor.left.setColour(true);
-                    break;
+                    ancestor.setColour(false);
+                    rbNode = ancestor;
+                    parent = rbNode.parent;
+                    depth += 2;
                 } else {
+                    depth = 0;
                     ancestor.setColour(false);
                     if (parent == ancestor.left) {
                         if (rbNode == parent.right) {
                             rbNode.setColour(true);
                             rotateLeft(parent);
+                            parent = parent.parent;
                         } else {
                             parent.setColour(true);
                         }
@@ -94,17 +110,22 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
                         if (rbNode == parent.left) {
                             rbNode.setColour(true);
                             rotateRight(parent);
+                            parent = parent.parent;
                         } else {
                             parent.setColour(true);
                         }
                         rotateLeft(ancestor);
                     }
+                    root = begin.left;
+                    begin.right = root;
                     rbNode = parent;
                     parent = rbNode.parent;
                 }
             }
             if (rbNode == root && !root.isBlack()) root.setColour(true);
+            else if (rbNode != root) depth++;
             size++;
+            height = Math.max(depth, height);
             System.out.println("Insert in RB: " + node);
         }
         long end = System.currentTimeMillis();
@@ -134,21 +155,22 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
                 break;
             }
         }
-        System.out.println("Search in RB for "+node);
+        System.out.println("Search in RB for " + node + " = " + found);
         return found;
     }
 
     @Override
     public int getSize() {
-        System.out.println("Get size in RB");
+        System.out.println("Get size in RB = " + size);
         return size;
     }
 
     @Override
     public int getHeight() {
-        System.out.println("GetHeight in RB");
+        System.out.println("Get height in RB = " + height);
         return height;
     }
+
     public void ends() throws IOException {
 
         FileWriter insertionTime, deletionTime;

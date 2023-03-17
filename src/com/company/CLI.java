@@ -39,6 +39,8 @@ public class CLI {
                     if (in[0].equals("insert") || in[0].equals("delete") ||
                             in[0].equals("search") || in[0].equals("batch") || in[0].equals("get") || in[0].equals("end"))
                         break;
+                    else
+                        System.out.println("Insert valid input");
                 }
                 catch (Exception e)
                 {
