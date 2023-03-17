@@ -31,8 +31,9 @@ public class AvlTree<T extends Comparable> implements Tree_Interface<T>{
     }
 
     @Override
-    public void search(T node) {
+    public boolean search(T node) {
         System.out.println("Search in AVL for "+node);
+        return true;
     }
 
 
