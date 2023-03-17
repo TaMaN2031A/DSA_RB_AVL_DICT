@@ -6,10 +6,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class RbTree<T extends Comparable> implements Tree_Interface<T> {
-    String insertionTimeStr ="Hallo\n", deletionTimeStr="Hallo\n";
+
+    String insertionTimeStr ="Hello\n", deletionTimeStr="Hello\n";
     int size = 0, height = 0;
-    RbNode root = new RbNode(null, null, null, null);
-    RbNode leaf = new RbNode(root, null, null, null);
+    RbNode<T> root = new RbNode<>(null, null, null, null);
+    RbNode<T> leaf = new RbNode<>(root, null, null, null);
 
     public RbTree() {
         root.parent = root;
@@ -18,8 +19,8 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
         root.setColour(true);
     }
 
-    public void rotateRight(RbNode node) {
-        RbNode child = node.left;
+    public void rotateRight(RbNode<T> node) {
+        RbNode<T> child = node.left;
         child.parent = node.parent;
         if (node == node.parent.left) {
             node.parent.left = child;
@@ -32,8 +33,8 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
         node.parent = child;
     }
 
-    public void rotateLeft(RbNode node) {
-        RbNode child = node.right;
+    public void rotateLeft(RbNode<T> node) {
+        RbNode<T> child = node.right;
         if (node == node.parent.left) {
             node.parent.left = child;
         } else {
@@ -48,7 +49,7 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
     @Override
     public void insert(T node) {
         long start = System.currentTimeMillis();
-        RbNode rbNode = root, parent = root;
+        RbNode<T> rbNode = root, parent = root;
         boolean found = false;
         while (rbNode.getValue() != null) {
             if (node.compareTo(rbNode.getValue()) > 0) {
@@ -57,6 +58,7 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
             } else if (node.compareTo(rbNode.getValue()) < 0) {
                 parent = rbNode;
                 rbNode = rbNode.left;
+                parent.left = rbNode;
             } else {
                 found = true;
                 break;
@@ -64,12 +66,49 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
         }
         if (found) {
             System.out.println(node + "was already inserted");
+        } else if (size == 0) {
+            root.setValue(node);
+            size++;
+            System.out.println("Insert in RB: " + node);
         } else {
-            rbNode.parent = parent;
+            rbNode = new RbNode<>(parent, leaf, leaf, node);
+            RbNode<T> ancestor;
+            while (rbNode != root) {
+                ancestor = parent.parent;
+                if (parent.isBlack()) break;
+                else if (!ancestor.left.isBlack() && !ancestor.right.isBlack()) {
+                    ancestor.right.setColour(true);
+                    ancestor.left.setColour(true);
+                    break;
+                } else {
+                    ancestor.setColour(false);
+                    if (parent == ancestor.left) {
+                        if (rbNode == parent.right) {
+                            rbNode.setColour(true);
+                            rotateLeft(parent);
+                        } else {
+                            parent.setColour(true);
+                        }
+                        rotateRight(ancestor);
+                    } else {
+                        if (rbNode == parent.left) {
+                            rbNode.setColour(true);
+                            rotateRight(parent);
+                        } else {
+                            parent.setColour(true);
+                        }
+                        rotateLeft(ancestor);
+                    }
+                    rbNode = parent;
+                    parent = rbNode.parent;
+                }
+            }
+            if (rbNode == root && !root.isBlack()) root.setColour(true);
+            size++;
+            System.out.println("Insert in RB: " + node);
         }
-        System.out.println("Insert in RB: "+node);
         long end = System.currentTimeMillis();
-        insertionTimeStr+=("Took: " +(end-start) + " ms\n");
+        insertionTimeStr+=("Took: " + (end-start) + " ms\n");
     }
 
     @Override
@@ -83,7 +122,7 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
 
     @Override
     public boolean search(T node) {
-        RbNode rbNode = root;
+        RbNode<T> rbNode = root;
         boolean found = false;
         while (rbNode.getValue() != null) {
             if (node.compareTo(rbNode.getValue()) > 0) {
@@ -101,7 +140,7 @@ public class RbTree<T extends Comparable> implements Tree_Interface<T> {
 
     @Override
     public int getSize() {
-        System.out.println("Getsize in RB");
+        System.out.println("Get size in RB");
         return size;
     }
 

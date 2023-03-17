@@ -2,12 +2,12 @@ package RB;
 
 public class RbNode<T extends Comparable> {
     private boolean colourBlack = false;
-    public RbNode parent;
-    public RbNode right;
-    public RbNode left;
+    public RbNode<T> parent;
+    public RbNode<T> right;
+    public RbNode<T> left;
     private T value;
 
-    public RbNode(RbNode parent, RbNode right, RbNode left, T value) {
+    public RbNode(RbNode<T> parent, RbNode<T> right, RbNode<T> left, T value) {
         this.parent = parent;
         this.right = right;
         this.left = left;
