@@ -14,6 +14,7 @@ public class CLI {
     }
     void run()  throws IOException {
         Scanner sc=new Scanner(System.in);
+        label:
         while(true)
         {
             while (!type.equals("AVL") && !type.equals("RB")) {
@@ -22,7 +23,7 @@ public class CLI {
                 System.out.println(type);
                 dictionary = new Dictionary(type);
             }
-            String in[] = new String[20];
+            String[] in = new String[20];
             while(true)
             {
                 try {
@@ -48,26 +49,31 @@ public class CLI {
                 }
             }
             try {
-                if (in[0].equals("insert")) {
-                    dictionary.insert(in[1]);
-                } else if (in[0].equals("delete")) {
-                    dictionary.delete(in[1]);
-                } else if (in[0].equals("search")) {
-                    dictionary.search(in[1]);
-                } else if (in[0].equals("batch")) {
-                    if (in[1].equals("insert"))
-                        dictionary.BashInsert(in[2]);
-                    else
-                        dictionary.BashDelete(in[2]);
-                } else if (in[0].equals("get")) {
-                    if (in[1].equals("height"))
-                        dictionary.getHeight();
-                    else
-                        dictionary.getSize();
-                } else
-                {
-                    dictionary.ends();
-                    break;
+                switch (in[0]) {
+                    case "insert":
+                        dictionary.insert(in[1]);
+                        break;
+                    case "delete":
+                        dictionary.delete(in[1]);
+                        break;
+                    case "search":
+                        dictionary.search(in[1]);
+                        break;
+                    case "batch":
+                        if (in[1].equals("insert"))
+                            dictionary.BashInsert(in[2]);
+                        else
+                            dictionary.BashDelete(in[2]);
+                        break;
+                    case "get":
+                        if (in[1].equals("height"))
+                            dictionary.getHeight();
+                        else
+                            dictionary.getSize();
+                        break;
+                    default:
+                        dictionary.ends();
+                        break label;
                 }
 
 

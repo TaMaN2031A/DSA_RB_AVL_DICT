@@ -1,5 +1,5 @@
-Hallo
-Took: 2 ms
+Hello
+Took: 0 ms
 Took: 0 ms
 Took: 0 ms
 Took: 0 ms
