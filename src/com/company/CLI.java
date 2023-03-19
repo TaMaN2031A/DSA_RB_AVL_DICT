@@ -81,6 +81,7 @@ public class CLI {
             catch (Exception e)
             {
                 System.out.println("Operation failed, insert right input");
+                System.out.println(e);
             }
         }
 

@@ -16,7 +16,7 @@ public class RbNode<T extends Comparable<? super T>> {
         this.height = height;
     }
 
-    public void setColour(boolean isBlack) {
+    public void setColourBlack(boolean isBlack) {
         this.colourBlack = isBlack;
     }
 

@@ -18,8 +18,8 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         begin.left = root;
         root.right = leaf;
         root.left = leaf;
-        root.setColour(true);
-        leaf.setColour(true);
+        root.setColourBlack(true);
+        leaf.setColourBlack(true);
     }
 
     public void rotateRight(RbNode<T> node) {
@@ -40,6 +40,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
 
     public void rotateLeft(RbNode<T> node) {
         RbNode<T> child = node.right;
+        child.parent = node.parent;
         if (node == node.parent.left) {
             node.parent.left = child;
         } else {
@@ -56,10 +57,10 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
     public RbNode<T> searchInternal(T node) {
         RbNode<T> rbNode = root, parent = root;
         while (rbNode.getValue() != null) {
-            if (node.compareTo(rbNode.getValue()) > 0) {
+            if (rbNode.getValue().compareTo(node) < 0) {
                 parent = rbNode;
                 rbNode = rbNode.right;
-            } else if (node.compareTo(rbNode.getValue()) < 0) {
+            } else if (rbNode.getValue().compareTo(node) > 0) {
                 parent = rbNode;
                 rbNode = rbNode.left;
             } else {
@@ -71,51 +72,46 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
 
     public boolean insertInternal(T node) {
         RbNode<T> parent = searchInternal(node);
-        if (parent.right.getValue().compareTo(node) == 0 || parent.left.getValue().compareTo(node) == 0) {
+        if ((parent.right != leaf && parent.right.getValue().compareTo(node) == 0) || (parent.left != leaf && parent.left.getValue().compareTo(node) == 0)) {
             return false;
-        } else if (size == 0) {
+        } if (size > 0 && root.getValue().compareTo(node) == 0) {
+            return false;
+        } if (size == 0) {
             root.setValue(node);
-            size = 1;
-            root.height = 1;
+            root.height++;
         } else {
-            RbNode<T> rbNode = new RbNode<>(parent, leaf, leaf, node, 1);
-            if (node.compareTo(parent.getValue()) > 0) parent.right = rbNode;
+            RbNode<T> rbNode = new RbNode<>(parent, leaf, leaf, node, 1), ancestor;
+            if (parent.getValue().compareTo(node) < 0) parent.right = rbNode;
             else parent.left = rbNode;
             parent.height = Math.max(parent.left.height + 1, parent.right.height + 1);
-            RbNode<T> ancestor;
             while (rbNode != root && parent != root) {
                 ancestor = parent.parent;
                 ancestor.height = Math.max(ancestor.left.height + 1, ancestor.right.height + 1);
-                if (parent.isBlack()) {
-                    while (rbNode != root) {
-                        rbNode = rbNode.parent;
-                        rbNode.height = Math.max(rbNode.left.height + 1, rbNode.right.height + 1);
-                    }
-                }
-                else if (!ancestor.left.isBlack() && !ancestor.right.isBlack()) {
-                    ancestor.right.setColour(true);
-                    ancestor.left.setColour(true);
-                    ancestor.setColour(false);
+                if (parent.isBlack())    break;                                         // Parent black case
+                else if (!ancestor.left.isBlack() && !ancestor.right.isBlack()) {       // Uncle Red case
+                    ancestor.right.setColourBlack(true);
+                    ancestor.left.setColourBlack(true);
+                    ancestor.setColourBlack(false);
                     rbNode = ancestor;
                     parent = rbNode.parent;
-                } else {
-                    ancestor.setColour(false);
-                    if (parent == ancestor.left) {
+                } else {                                                                // Uncle black cases
+                    ancestor.setColourBlack(false);
+                    if (parent == ancestor.left) {                                      // LL & LR
                         if (rbNode == parent.right) {
-                            rbNode.setColour(true);
+                            rbNode.setColourBlack(true);
                             rotateLeft(parent);
                             parent = parent.parent;
                         } else {
-                            parent.setColour(true);
+                            parent.setColourBlack(true);
                         }
                         rotateRight(ancestor);
-                    } else {
+                    } else {                                                            // RR & RL
                         if (rbNode == parent.left) {
-                            rbNode.setColour(true);
+                            rbNode.setColourBlack(true);
                             rotateRight(parent);
                             parent = parent.parent;
                         } else {
-                            parent.setColour(true);
+                            parent.setColourBlack(true);
                         }
                         rotateLeft(ancestor);
                     }
@@ -126,11 +122,13 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
                     rbNode.height = Math.max(rbNode.left.height + 1, rbNode.right.height + 1);
                     parent.height = Math.max(parent.left.height + 1, parent.right.height + 1);
                 }
+            } while (rbNode != begin) {
+                rbNode = rbNode.parent;
+                rbNode.height = Math.max(rbNode.left.height + 1, rbNode.right.height + 1);
             }
-            if (rbNode == root && !root.isBlack()) root.setColour(true);
-            size++;
-            root.height = Math.max(root.right.height + 1, root.left.height + 1);
         }
+        root.setColourBlack(true);
+        size++;
         return true;
     }
 
@@ -154,55 +152,108 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
 
     public boolean deleteInternal(T node) {
         RbNode<T> parent = searchInternal(node);
-        if (parent.right.getValue().compareTo(node) != 0 && parent.left.getValue().compareTo(node) != 0) {
-            return false;
-        } else if (size == 1) {
+        if (parent.right == leaf || parent.right.getValue().compareTo(node) != 0) {
+            if (parent.left == leaf || parent.left.getValue().compareTo(node) != 0) {
+                if (size == 0 || parent != root || parent.getValue().compareTo(node) != 0) {
+                    return false;
+                }
+            }
+        } if (size == 1) {
             root.setValue(null);
             size = 0;
             root.height = 0;
         } else {
             RbNode<T> rbNode;
-            if (parent.right.getValue().compareTo(node) == 0) rbNode = parent.right;
+            if (parent.getValue().compareTo(node) == 0) {parent = begin; rbNode = root;}
+            else if (parent.right != leaf && parent.right.getValue().compareTo(node) == 0) rbNode = parent.right;
             else rbNode = parent.left;
-            if (rbNode.left != leaf && rbNode.right != leaf){
+            if (rbNode.left != leaf && rbNode.right != leaf){                       // Node has children at both sides
                 parent = rbNode;
                 rbNode = getLeftMostRight(rbNode);
                 parent.setValue(rbNode.getValue());
                 parent = rbNode.parent;
             }
-            if (rbNode.left == leaf) {
-                if (rbNode.right != leaf && rbNode.right.left != leaf) {
-                    rbNode.setValue(rbNode.right.left.getValue());
-                    rbNode.right.left.parent = null;
-                    rbNode.right.left.right = null;
-                    rbNode.right.left.left = null;
-                    rbNode.right.left = leaf;
-                } else {
-                    if (parent.right == rbNode) parent.right = rbNode.right;
-                    else parent.left = rbNode.right;
-                    if (rbNode.right != leaf) {
-                        rbNode.right.parent = parent;
-                    }
-                    rbNode.parent = null;
-                    rbNode.right = null;
-                    rbNode.left = null;
-                }
+            if (rbNode.left == leaf) {                                              // Node has one child or no children
+                if (rbNode == parent.left)   parent.left = rbNode.right;
+                else   parent.right = rbNode.right;
+                if (rbNode.right != leaf)   rbNode.right.parent = parent;
             } else {
-                if (rbNode.left.right != leaf) {
-                    rbNode.setValue(rbNode.left.right.getValue());
-                    rbNode.left.right.parent = null;
-                    rbNode.left.right.right = null;
-                    rbNode.left.right.left = null;
-                    rbNode.left.right = leaf;
-                } else {
-                    if (parent.right == rbNode) parent.right = rbNode.right;
-                    else parent.left = rbNode.right;
-                    rbNode.left.parent = parent;
-                    rbNode.parent = null;
-                    rbNode.right = null;
-                    rbNode.left = null;
-                }
+                if (rbNode == parent.left)   parent.left = rbNode.left;
+                else   parent.right = rbNode.left;
+                rbNode.left.parent = parent;
             }
+            rbNode.parent = null;
+            rbNode.right = null;
+            rbNode.left = null;
+            boolean isBlack = rbNode.isBlack();
+            rbNode = parent;
+            parent = parent.parent;
+            if (isBlack && !rbNode.isBlack()) {                                         // Case I
+                rbNode.setColourBlack(true);
+                isBlack = false;
+                rbNode = parent;
+            }
+            while (isBlack && (rbNode != root && parent != root)) {
+                if (parent.right == rbNode && !parent.left.isBlack()) {                 // Case III right
+                    parent.left.setColourBlack(true);
+                    parent.setColourBlack(false);
+                    rotateRight(parent);
+                } else if (parent.left == rbNode && !parent.right.isBlack()){           // Case III left
+                    parent.right.setColourBlack(true);
+                    parent.setColourBlack(false);
+                    rotateLeft(parent);
+                } if (parent.right == rbNode){                                          // Case II right
+                    if (parent.left.left.isBlack() && parent.left.right.isBlack()) {    // 2 black children
+                        parent.left.setColourBlack(false);
+                        if (!parent.isBlack())    isBlack = false;
+                        parent.setColourBlack(true);
+                    } else {                                                            // Left red, right black
+                        if (parent.left.left.isBlack()) {
+                            parent.left.setColourBlack(false);
+                            parent.left.right.setColourBlack(true);
+                            rotateLeft(parent.left);
+                        } else {                                                        // Right red
+                            if (parent.isBlack())   parent.left.left.setColourBlack(true);
+                            else if (!parent.left.right.isBlack()) {
+                                parent.left.left.setColourBlack(true);
+                                parent.left.setColourBlack(false);
+                                parent.setColourBlack(true);
+                            }
+                        }
+                        rotateRight(parent);
+                        isBlack = false;
+                    }
+                } else {                                                                // Case II left
+                    if (parent.right.left.isBlack() && parent.right.right.isBlack()) {  // 2 black children
+                        parent.right.setColourBlack(false);
+                        if (!parent.isBlack())    isBlack = false;
+                        parent.setColourBlack(true);
+                    } else {
+                        if (parent.right.right.isBlack()) {                             // Left red, right black
+                            parent.right.setColourBlack(false);
+                            parent.right.left.setColourBlack(true);
+                            rotateRight(parent.right);
+                        } else {                                                        // Right red
+                            if (parent.isBlack())   parent.right.right.setColourBlack(true);
+                            else if (!parent.right.left.isBlack()) {
+                                parent.right.right.setColourBlack(true);
+                                parent.right.setColourBlack(false);
+                                parent.setColourBlack(true);
+                            }
+                        }
+                        rotateLeft(parent);
+                        isBlack = false;
+                    }
+                }
+                parent.height = Math.max(parent.right.height + 1, parent.left.height + 1);
+                rbNode = parent;
+                parent = parent.parent;
+            }
+            while (rbNode != begin) {
+                rbNode.height = Math.max(rbNode.right.height + 1, rbNode.left.height + 1);
+                rbNode = rbNode.parent;
+            }
+            size--;
         }
         return true;
     }
@@ -222,9 +273,9 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         RbNode<T> rbNode = root;
         boolean found = false;
         while (rbNode.getValue() != null) {
-            if (node.compareTo(rbNode.getValue()) > 0) {
+            if (rbNode.getValue().compareTo(node) < 0) {
                 rbNode = rbNode.right;
-            } else if (node.compareTo(rbNode.getValue()) < 0) {
+            } else if (rbNode.getValue().compareTo(node) > 0) {
                 rbNode = rbNode.left;
             } else {
                 found = true;

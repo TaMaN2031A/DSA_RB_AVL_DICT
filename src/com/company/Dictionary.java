@@ -16,13 +16,16 @@ public class Dictionary {
     void insert(String node) throws IOException {
         tree.insert(node);
     }
+
     void delete(String node) throws IOException {
         tree.delete(node);
     }
-    void search(String node)
+
+    boolean search(String node)
     {
-        tree.search(node);
+        return tree.search(node);
     }
+
     void BashInsert(String route) throws IOException {
         File file = new File(route);
        // System.out.println(route);
@@ -34,6 +37,7 @@ public class Dictionary {
         }
         System.out.println("Batch insert Done");
     }
+
     void BashDelete(String route) throws IOException {
         File file = new File(route);
         Scanner sc = new Scanner(file);
@@ -44,13 +48,16 @@ public class Dictionary {
         }
         System.out.println("Batch insert Done");
     }
+
     void ends() throws IOException {
         tree.ends();
     }
+
     int getSize()
     {
         return tree.getSize();
     }
+
     int getHeight()
     {
         return tree.getHeight();
