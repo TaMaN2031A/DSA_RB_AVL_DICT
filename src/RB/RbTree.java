@@ -1,6 +1,6 @@
 package RB;
 
-import com.company.Tree_Interface;
+import Interfaces.Tree_Interface;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,7 +21,6 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         root.setColourBlack(true);
         leaf.setColourBlack(true);
     }
-
     public void rotateRight(RbNode<T> node) {
         RbNode<T> child = node.left;
         child.parent = node.parent;
@@ -37,7 +36,6 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         node.height = Math.max(node.right.height + 1, node.left.height + 1);
         child.height = Math.max(child.left.height + 1, child.right.height + 1);
     }
-
     public void rotateLeft(RbNode<T> node) {
         RbNode<T> child = node.right;
         child.parent = node.parent;
@@ -53,7 +51,6 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         node.height = Math.max(node.left.height + 1, node.right.height + 1);
         child.height = Math.max(child.right.height + 1, child.left.height + 1);
     }
-
     public RbNode<T> searchInternal(T node) {
         RbNode<T> rbNode = root, parent = root;
         while (rbNode.getValue() != null) {
@@ -69,7 +66,6 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         }
         return parent;
     }
-
     public boolean insertInternal(T node) {
         RbNode<T> parent = searchInternal(node);
         if ((parent.right != leaf && parent.right.getValue().compareTo(node) == 0) || (parent.left != leaf && parent.left.getValue().compareTo(node) == 0)) {
@@ -121,28 +117,17 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
                     parent = rbNode.parent;
                     rbNode.height = Math.max(rbNode.left.height + 1, rbNode.right.height + 1);
                     parent.height = Math.max(parent.left.height + 1, parent.right.height + 1);
+                    break;
                 }
             } while (rbNode != begin) {
-                rbNode = rbNode.parent;
                 rbNode.height = Math.max(rbNode.left.height + 1, rbNode.right.height + 1);
+                rbNode = rbNode.parent;
             }
         }
         root.setColourBlack(true);
         size++;
         return true;
     }
-
-    @Override
-    public boolean insert(T node) {
-        long start = System.nanoTime();
-        boolean isInserted = insertInternal(node);
-        if (!isInserted) System.out.println(node + " was already inserted");
-        else System.out.println("Insert in RB: " + node);
-        long end = System.nanoTime();
-        insertionTimeStr+=((end-start) + " " + getHeight() + " " + getSize() + "\n");;
-        return isInserted;
-    }
-
     public RbNode<T> getLeftMostRight(RbNode<T> node) {
         RbNode<T> leftMost = node.right;
         while (leftMost.left != leaf) {
@@ -150,7 +135,6 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         }
         return leftMost;
     }
-
     public boolean deleteInternal(T node) {
         RbNode<T> parent = searchInternal(node);
         if (parent.right == leaf || parent.right.getValue().compareTo(node) != 0) {
@@ -165,6 +149,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
             root.height = 0;
         } else {
             RbNode<T> rbNode;
+            boolean left = true;
             if (parent.getValue().compareTo(node) == 0) {parent = begin; rbNode = root;}
             else if (parent.right != leaf && parent.right.getValue().compareTo(node) == 0) rbNode = parent.right;
             else rbNode = parent.left;
@@ -176,25 +161,26 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
             }
             if (rbNode.left == leaf) {                                              // Node has one child or no children
                 if (rbNode == parent.left)   parent.left = rbNode.right;
-                else   parent.right = rbNode.right;
+                else { parent.right = rbNode.right;   left = false; }
                 if (rbNode.right != leaf)   rbNode.right.parent = parent;
             } else {
                 if (rbNode == parent.left)   parent.left = rbNode.left;
-                else   parent.right = rbNode.left;
+                else { parent.right = rbNode.left;   left = false; }
                 rbNode.left.parent = parent;
             }
             rbNode.parent = null;
             rbNode.right = null;
             rbNode.left = null;
             boolean isBlack = rbNode.isBlack();
-            rbNode = parent;
-            parent = parent.parent;
+            rbNode = left ? parent.left : parent.right;
+            root = begin.left;
+            begin.right = root;
             if (isBlack && !rbNode.isBlack()) {                                         // Case I
                 rbNode.setColourBlack(true);
                 isBlack = false;
                 rbNode = parent;
             }
-            while (isBlack && (rbNode != root && parent != root)) {
+            while (isBlack && (rbNode != root && rbNode != begin && parent != root)) {
                 if (parent.right == rbNode && !parent.left.isBlack()) {                 // Case III right
                     parent.left.setColourBlack(true);
                     parent.setColourBlack(false);
@@ -250,24 +236,52 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
                 rbNode = parent;
                 parent = parent.parent;
             }
+            if (rbNode == leaf)      rbNode = parent;
             while (rbNode != begin) {
                 rbNode.height = Math.max(rbNode.right.height + 1, rbNode.left.height + 1);
                 rbNode = rbNode.parent;
             }
             size--;
         }
+        root = begin.left;
+        begin.right = root;
         return true;
     }
 
     @Override
-    public boolean delete(T node) {
+    public int insert(T node) {
+        long start = System.nanoTime();
+        boolean isInserted = insertInternal(node);
+        long end = System.nanoTime();
+        insertionTimeStr+=((end-start) + " " + TreeHeight() + " " + TreeSize() + "\n");;
+
+        if (!isInserted) {
+            System.out.println("The item you are inserting already exists!");
+            return 0;
+        }else{
+            System.out.println(node+" added Successfully!");
+            return 1;
+        }
+
+    }
+
+    @Override
+    public int delete(T node) {
         long start = System.nanoTime();
         boolean isDeleted = deleteInternal(node);
-        if (isDeleted) System.out.println("Delete in RB element: " + node);
-        else System.out.println(node + " not found");
         long end = System.nanoTime();
-        deletionTimeStr+=((end-start) + " " + getHeight() + " " + getSize() + "\n");
-        return isDeleted;
+        deletionTimeStr+=((end-start) + " " + TreeHeight() + " " + TreeSize() + "\n");
+        if (isDeleted){
+            System.out.println(node+" deleted Successfully!");
+            return 1;
+        }else {
+            if(size==0){
+                System.out.println("Tree is Empty!");
+            }else{
+                System.out.println("The key you are trying to delete doesn't exist!");
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -285,24 +299,26 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
                 break;
             }
         }
-        System.out.println("Search in RB for " + node + " = " + found);
+        if(size==0){
+            System.out.println("Tree is Empty!");
+        }
+        if(found){
+            System.out.println(node+" found Successfully!");
+        }else{
+            System.out.println("Key not found!");
+        }
         long end = System.nanoTime();
-        searchTimeStr+=((end-start) + " " + getHeight() + " " + getSize() + "\n");
+        searchTimeStr+=((end-start) + " " + TreeHeight() + " " + TreeSize() + "\n");
         return found;
     }
 
-    @Override
-    public int getSize() {
-        System.out.println("Get size in RB = " + size);
+
+    public int TreeSize() {
         return size;
     }
-
-    @Override
-    public int getHeight() {
-        System.out.println("Get height in RB = " + root.height);
-        return root.height;
+    public int TreeHeight() {
+        return root.height-1;
     }
-
     public void ends() throws IOException {
 
         FileWriter insertionTime, deletionTime, searchingTime;
@@ -321,4 +337,5 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         System.out.println("Writing done");
 
     }
+
 }
