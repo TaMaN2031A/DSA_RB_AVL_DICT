@@ -197,16 +197,13 @@ public class AvlTree<T extends Comparable> implements Tree_Interface<T>{
     }
     public int TreeHeight() {
         if(root!=null) {
-            System.out.println("The Height is : "+root.getHeight());
             return root.getHeight();
         }
         else {
-            System.out.println("Your Tree is Empty!");
             return -1;
         }
     }
     public int TreeSize() {
-        System.out.println("The Size is : " +size);
         return size;
     }
    

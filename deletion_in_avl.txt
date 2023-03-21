@@ -1,2 +1,0 @@
-Time taken to delete batch of size 4 is 1 ms
-Time taken to delete batch of size 4 is 1 ms

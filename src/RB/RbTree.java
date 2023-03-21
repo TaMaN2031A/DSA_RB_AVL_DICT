@@ -304,12 +304,10 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
 
 
     public int TreeSize() {
-        System.out.println("The Size is : " + size);
         return size;
     }
     public int TreeHeight() {
-        System.out.println("The Height is : " + (root.height-1));
-        return root.height;
+        return root.height-1;
     }
     public void ends() throws IOException {
 

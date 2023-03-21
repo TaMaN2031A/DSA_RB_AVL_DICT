@@ -1,6 +1,0 @@
-Time taken to insert the given key (if inserted) is 5 ms
-Time taken to insert the given key (if inserted) is 1 ms
-Time taken to insert the given key (if inserted) is 0 ms
-Time taken to insert batch of size 10 is 11 ms
-Time taken to insert batch of size 10 is 3 ms
-Time taken to insert the given key (if inserted) is 0 ms

@@ -1,5 +1,0 @@
-Time taken to delete the given key (if deleted) is 0 ms
-Time taken to delete the given key (if deleted) is 0 ms
-Time taken to delete batch of size 4is 3 ms
-Time taken to delete batch of size 4 is 1 ms
-Time taken to delete the given key (if deleted) is 0 ms
