@@ -124,10 +124,33 @@ class DictionaryTest {
         dictionary.BashInsert("F:\\200.txt");
         dictionary.ends();
         // NO assert here
-//        Dictionary dictionary = new Dictionary("AVL");
+//        Dictionary dictionary2 = new Dictionary("AVL");
 //        dictionary.BashInsert("F:\\200.txt");
 //        dictionary.ends();
     }
-    // Running out of ideas el sara7, na2es 4 3ala el 20, matroken l 25oya el m7nksh
+
+    @Test
+    void Searching_ForExisting_Non_Existing_Node() throws IOException {
+        Dictionary dictionary = new Dictionary("RB");
+        dictionary.insert("a");
+        Assertions.assertTrue(dictionary.search("a"));
+//        Dictionary dictionary2 = new Dictionary("AVL");
+//        dictionary.insert("a");
+//        Assertions.assertTrue(dictionary.search("a"));
+
+    }
+
+    void Searching_Non_Existing_Node() throws IOException {
+        Dictionary dictionary = new Dictionary("RB");
+        dictionary.insert("a");
+        dictionary.delete("a");
+        Assertions.assertFalse(dictionary.search("a"));
+//        Dictionary dictionary2 = new Dictionary("RB");
+//        dictionary.insert("a");
+//        dictionary.delete("a");
+//        Assertions.assertFalse(dictionary.search("a"));
+    }
+        // Running out of ideas el sara7, na2es 4 3ala el 20, matroken l 25oya el m7nksh
+        // 4aylen kimo tarek l 3oza, 20 test cases al7amdullilah
 
 }
