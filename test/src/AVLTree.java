@@ -1,5 +1,6 @@
 import static java.lang.Math.hypot;
 import static java.lang.Math.max;
+
 public class AVLTree {
 
     binarynode root=null;
@@ -38,8 +39,6 @@ public class AVLTree {
 
         return p;
     }
-
-
 
     private void method_inorder(binarynode p){
         if (p==null){
@@ -129,9 +128,7 @@ public class AVLTree {
             size++;
         }
         else{
-
            root=method_insert(target,root);
-
         }
     }
     public binarynode get_min_element(binarynode p){
@@ -163,7 +160,6 @@ public class AVLTree {
     public void get_size(){
         System.out.println(size);
     }
-
 
 
 

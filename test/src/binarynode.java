@@ -2,7 +2,7 @@ import static java.lang.Math.max;
 
 public class binarynode {
     int data;
-     int height=0;
+    int height=0;
     binarynode left=null;
     binarynode right=null;
 
