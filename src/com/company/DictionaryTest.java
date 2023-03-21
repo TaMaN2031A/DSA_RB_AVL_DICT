@@ -118,7 +118,16 @@ class DictionaryTest {
 //        int removed = dictionary.BashDelete("F:\\0.txt");
 //        assertEquals(1, removed);
     }
-
-    // Running out of ideas el sara7, na2es 6 3ala el 20, matroken l 25oya el m7nksh
+    @Test
+    void testing_The_Time_In_Insertion() throws IOException {
+        Dictionary dictionary = new Dictionary("RB");
+        dictionary.BashInsert("F:\\200.txt");
+        dictionary.ends();
+        // NO assert here
+//        Dictionary dictionary = new Dictionary("AVL");
+//        dictionary.BashInsert("F:\\200.txt");
+//        dictionary.ends();
+    }
+    // Running out of ideas el sara7, na2es 4 3ala el 20, matroken l 25oya el m7nksh
 
 }
