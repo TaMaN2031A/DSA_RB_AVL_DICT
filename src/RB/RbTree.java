@@ -121,10 +121,11 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
                     parent = rbNode.parent;
                     rbNode.height = Math.max(rbNode.left.height + 1, rbNode.right.height + 1);
                     parent.height = Math.max(parent.left.height + 1, parent.right.height + 1);
+                    break;
                 }
             } while (rbNode != begin) {
-                rbNode = rbNode.parent;
                 rbNode.height = Math.max(rbNode.left.height + 1, rbNode.right.height + 1);
+                rbNode = rbNode.parent;
             }
         }
         root.setColourBlack(true);
@@ -164,6 +165,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
             root.height = 0;
         } else {
             RbNode<T> rbNode;
+            boolean left = true;
             if (parent.getValue().compareTo(node) == 0) {parent = begin; rbNode = root;}
             else if (parent.right != leaf && parent.right.getValue().compareTo(node) == 0) rbNode = parent.right;
             else rbNode = parent.left;
@@ -175,25 +177,26 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
             }
             if (rbNode.left == leaf) {                                              // Node has one child or no children
                 if (rbNode == parent.left)   parent.left = rbNode.right;
-                else   parent.right = rbNode.right;
+                else { parent.right = rbNode.right;   left = false; }
                 if (rbNode.right != leaf)   rbNode.right.parent = parent;
             } else {
                 if (rbNode == parent.left)   parent.left = rbNode.left;
-                else   parent.right = rbNode.left;
+                else { parent.right = rbNode.left;   left = false; }
                 rbNode.left.parent = parent;
             }
             rbNode.parent = null;
             rbNode.right = null;
             rbNode.left = null;
             boolean isBlack = rbNode.isBlack();
-            rbNode = parent;
-            parent = parent.parent;
+            rbNode = left ? parent.left : parent.right;
+            root = begin.left;
+            begin.right = root;
             if (isBlack && !rbNode.isBlack()) {                                         // Case I
                 rbNode.setColourBlack(true);
                 isBlack = false;
                 rbNode = parent;
             }
-            while (isBlack && (rbNode != root && parent != root)) {
+            while (isBlack && (rbNode != root && rbNode != begin && parent != root)) {
                 if (parent.right == rbNode && !parent.left.isBlack()) {                 // Case III right
                     parent.left.setColourBlack(true);
                     parent.setColourBlack(false);
@@ -249,12 +252,15 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
                 rbNode = parent;
                 parent = parent.parent;
             }
+            if (rbNode == leaf)      rbNode = parent;
             while (rbNode != begin) {
                 rbNode.height = Math.max(rbNode.right.height + 1, rbNode.left.height + 1);
                 rbNode = rbNode.parent;
             }
             size--;
         }
+        root = begin.left;
+        begin.right = root;
         return true;
     }
 
