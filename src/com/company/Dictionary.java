@@ -6,43 +6,53 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Dictionary {
+public class Dictionary<T extends Comparable<T>> {
     Tree_Interface tree;
     Factory factory = new Factory();
     Dictionary(String type)
     {
         tree = factory.getTree(type);
     }
-    void insert(String node) throws IOException {
-        tree.insert(node);
+    boolean insert(String node) throws IOException {
+        return tree.insert(node);
     }
-    void delete(String node) throws IOException {
-        tree.delete(node);
+    boolean delete(String node) throws IOException {
+        return tree.delete(node);
     }
-    void search(String node)
+    boolean search(String node)
     {
-        tree.search(node);
+        return tree.search(node);
     }
-    void BashInsert(String route) throws IOException {
+    int BashInsert(String route) throws IOException {
         File file = new File(route);
-       // System.out.println(route);
+        int added = 0;
         Scanner sc = new Scanner(file);
         while(sc.hasNextLine())
         {
             String input = sc.next();
-            insert(input);
+            boolean state = insert(input);
+            if(state)
+            {
+                added++;
+            }
         }
-        System.out.println("Batch insert Done");
+        System.out.println("Batch insert Done ");
+        System.out.println("Number of successful insertions is: " + added);
+        return added;
     }
-    void BashDelete(String route) throws IOException {
+    int BashDelete(String route) throws IOException {
         File file = new File(route);
         Scanner sc = new Scanner(file);
+        int deleted = 0;
         while(sc.hasNextLine())
         {
             String input = sc.next();
-            delete(input);
+            if(delete(input))
+                deleted++;
         }
-        System.out.println("Batch insert Done");
+        System.out.println("Batch delete Done");
+        System.out.println("Number of successful deletions is: " + deleted);
+        return deleted;
     }
     void ends() throws IOException {
         tree.ends();

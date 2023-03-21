@@ -1,11 +1,13 @@
 package com.company;
 
+import RB.RbNode;
+
 import java.io.IOException;
 
 public interface Tree_Interface<T> {
-    void insert(T node) throws IOException;
-    void delete(T node) throws IOException;
-    void search(T node);
+    boolean insert(T node) throws IOException;
+    boolean delete(T node) throws IOException;
+    boolean search(T node);
     int getSize();
     int getHeight();
     void ends() throws IOException;

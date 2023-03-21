@@ -1,38 +1,47 @@
 package AVL;
 
+import RB.RbNode;
 import com.company.Tree_Interface;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class AvlTree<T extends Comparable> implements Tree_Interface<T>{
+public class AvlTree<T extends Comparable<T>> implements Tree_Interface<T>{
 
     String insertionTimeStr ="Hallo\n", deletionTimeStr="Hallo\n";
+    RbNode<T> begin = new RbNode<>(null, null, null, null, 1);
+    RbNode<T> root = new RbNode<>(begin, null, null, null, 0);
+    RbNode<T> leaf = new RbNode<>(root, null, null, null, 0);
 
 
 
     @Override
-    public void insert(T node) throws IOException {
+    public boolean insert(T node) throws IOException {
         long start = System.currentTimeMillis();
 
         System.out.println("Insert in AVL: "+node);
         //
         long end = System.currentTimeMillis();
         insertionTimeStr+=("Took: " +(end-start) + " ms\n");
+        return true;
+    }
+    public RbNode<T> getRoot() {
+        return root;
     }
 
     @Override
-    public void delete(T node) throws IOException {
+    public boolean delete(T node) throws IOException {
         long start = System.currentTimeMillis();
         System.out.println("Delete in AVL element: "+node);
         long end = System.currentTimeMillis();
         insertionTimeStr+=("Took: " +(end-start) + " ms\n");
+        return true;
     }
 
     @Override
-    public void search(T node) {
+    public boolean search(T node) {
         System.out.println("Search in AVL for "+node);
+        return true;
     }
 
 

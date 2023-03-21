@@ -5,42 +5,301 @@ import com.company.Tree_Interface;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class RbTree<T extends Comparable> implements Tree_Interface<T> {
-    String insertionTimeStr ="Hallo\n", deletionTimeStr="Hallo\n";
-    @Override
-    public void insert(T node) {
-        long start = System.currentTimeMillis();
+public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T> {
 
-        System.out.println("Insert in RB: "+node);
-        long end = System.currentTimeMillis();
-        insertionTimeStr+=("Took: " +(end-start) + " ms\n");
+    String insertionTimeStr ="Hello\n", deletionTimeStr="Hello\n";
+    int size = 0;
+    RbNode<T> begin = new RbNode<>(null, null, null, null, 1);
+    RbNode<T> root = new RbNode<>(begin, null, null, null, 0);
+    RbNode<T> leaf = new RbNode<>(root, null, null, null, 0);
+
+    public RbTree() {
+        begin.right = root;
+        begin.left = root;
+        root.right = leaf;
+        root.left = leaf;
+        root.setColourBlack(true);
+        leaf.setColourBlack(true);
+    }
+
+    public void rotateRight(RbNode<T> node) {
+        RbNode<T> child = node.left;
+        child.parent = node.parent;
+        if (node == node.parent.left) {
+            node.parent.left = child;
+        } else {
+            node.parent.right = child;
+        }
+        node.left = child.right;
+        child.right.parent = node;
+        child.right = node;
+        node.parent = child;
+        node.height = Math.max(node.right.height + 1, node.left.height + 1);
+        child.height = Math.max(child.left.height + 1, child.right.height + 1);
+    }
+
+    public void rotateLeft(RbNode<T> node) {
+        RbNode<T> child = node.right;
+        child.parent = node.parent;
+        if (node == node.parent.left) {
+            node.parent.left = child;
+        } else {
+            node.parent.right = child;
+        }
+        node.right = child.left;
+        child.left.parent = node;
+        child.left = node;
+        node.parent = child;
+        node.height = Math.max(node.left.height + 1, node.right.height + 1);
+        child.height = Math.max(child.right.height + 1, child.left.height + 1);
+    }
+
+    public RbNode<T> searchInternal(T node) {
+        RbNode<T> rbNode = root, parent = root;
+        while (rbNode.getValue() != null) {
+            if (rbNode.getValue().compareTo(node) < 0) {
+                parent = rbNode;
+                rbNode = rbNode.right;
+            } else if (rbNode.getValue().compareTo(node) > 0) {
+                parent = rbNode;
+                rbNode = rbNode.left;
+            } else {
+                break;
+            }
+        }
+        return parent;
+    }
+
+    public boolean insertInternal(T node) {
+        RbNode<T> parent = searchInternal(node);
+        if ((parent.right != leaf && parent.right.getValue().compareTo(node) == 0) || (parent.left != leaf && parent.left.getValue().compareTo(node) == 0)) {
+            return false;
+        } if (size > 0 && root.getValue().compareTo(node) == 0) {
+            return false;
+        } if (size == 0) {
+            root.setValue(node);
+            root.height++;
+        } else {
+            RbNode<T> rbNode = new RbNode<>(parent, leaf, leaf, node, 1), ancestor;
+            if (parent.getValue().compareTo(node) < 0) parent.right = rbNode;
+            else parent.left = rbNode;
+            parent.height = Math.max(parent.left.height + 1, parent.right.height + 1);
+            while (rbNode != root && parent != root) {
+                ancestor = parent.parent;
+                ancestor.height = Math.max(ancestor.left.height + 1, ancestor.right.height + 1);
+                if (parent.isBlack())    break;                                         // Parent black case
+                else if (!ancestor.left.isBlack() && !ancestor.right.isBlack()) {       // Uncle Red case
+                    ancestor.right.setColourBlack(true);
+                    ancestor.left.setColourBlack(true);
+                    ancestor.setColourBlack(false);
+                    rbNode = ancestor;
+                    parent = rbNode.parent;
+                } else {                                                                // Uncle black cases
+                    ancestor.setColourBlack(false);
+                    if (parent == ancestor.left) {                                      // LL & LR
+                        if (rbNode == parent.right) {
+                            rbNode.setColourBlack(true);
+                            rotateLeft(parent);
+                            parent = parent.parent;
+                        } else {
+                            parent.setColourBlack(true);
+                        }
+                        rotateRight(ancestor);
+                    } else {                                                            // RR & RL
+                        if (rbNode == parent.left) {
+                            rbNode.setColourBlack(true);
+                            rotateRight(parent);
+                            parent = parent.parent;
+                        } else {
+                            parent.setColourBlack(true);
+                        }
+                        rotateLeft(ancestor);
+                    }
+                    root = begin.left;
+                    begin.right = root;
+                    rbNode = parent;
+                    parent = rbNode.parent;
+                    rbNode.height = Math.max(rbNode.left.height + 1, rbNode.right.height + 1);
+                    parent.height = Math.max(parent.left.height + 1, parent.right.height + 1);
+                }
+            } while (rbNode != begin) {
+                rbNode = rbNode.parent;
+                rbNode.height = Math.max(rbNode.left.height + 1, rbNode.right.height + 1);
+            }
+        }
+        root.setColourBlack(true);
+        size++;
+        return true;
     }
 
     @Override
-    public void delete(T node) {
+    public boolean insert(T node) {
         long start = System.currentTimeMillis();
-
-        System.out.println("Delete in RB element: "+node);
+        boolean isInserted = insertInternal(node);
+        if (!isInserted) System.out.println(node + " was already inserted");
+        else System.out.println("Insert in RB: " + node);
         long end = System.currentTimeMillis();
-        insertionTimeStr+=("Took: " +(end-start) + " ms\n");
+        insertionTimeStr+=("Took: " + (end-start) + " ms\n");
+        return isInserted;
+    }
+
+    public RbNode<T> getLeftMostRight(RbNode<T> node) {
+        RbNode<T> leftMost = node.right;
+        while (leftMost.left != leaf) {
+            leftMost = leftMost.left;
+        }
+        return leftMost;
+    }
+
+    public boolean deleteInternal(T node) {
+        RbNode<T> parent = searchInternal(node);
+        if (parent.right == leaf || parent.right.getValue().compareTo(node) != 0) {
+            if (parent.left == leaf || parent.left.getValue().compareTo(node) != 0) {
+                if (size == 0 || parent != root || parent.getValue().compareTo(node) != 0) {
+                    return false;
+                }
+            }
+        } if (size == 1) {
+            root.setValue(null);
+            size = 0;
+            root.height = 0;
+        } else {
+            RbNode<T> rbNode;
+            if (parent.getValue().compareTo(node) == 0) {parent = begin; rbNode = root;}
+            else if (parent.right != leaf && parent.right.getValue().compareTo(node) == 0) rbNode = parent.right;
+            else rbNode = parent.left;
+            if (rbNode.left != leaf && rbNode.right != leaf){                       // Node has children at both sides
+                parent = rbNode;
+                rbNode = getLeftMostRight(rbNode);
+                parent.setValue(rbNode.getValue());
+                parent = rbNode.parent;
+            }
+            if (rbNode.left == leaf) {                                              // Node has one child or no children
+                if (rbNode == parent.left)   parent.left = rbNode.right;
+                else   parent.right = rbNode.right;
+                if (rbNode.right != leaf)   rbNode.right.parent = parent;
+            } else {
+                if (rbNode == parent.left)   parent.left = rbNode.left;
+                else   parent.right = rbNode.left;
+                rbNode.left.parent = parent;
+            }
+            rbNode.parent = null;
+            rbNode.right = null;
+            rbNode.left = null;
+            boolean isBlack = rbNode.isBlack();
+            rbNode = parent;
+            parent = parent.parent;
+            if (isBlack && !rbNode.isBlack()) {                                         // Case I
+                rbNode.setColourBlack(true);
+                isBlack = false;
+                rbNode = parent;
+            }
+            while (isBlack && (rbNode != root && parent != root)) {
+                if (parent.right == rbNode && !parent.left.isBlack()) {                 // Case III right
+                    parent.left.setColourBlack(true);
+                    parent.setColourBlack(false);
+                    rotateRight(parent);
+                } else if (parent.left == rbNode && !parent.right.isBlack()){           // Case III left
+                    parent.right.setColourBlack(true);
+                    parent.setColourBlack(false);
+                    rotateLeft(parent);
+                } if (parent.right == rbNode){                                          // Case II right
+                    if (parent.left.left.isBlack() && parent.left.right.isBlack()) {    // 2 black children
+                        parent.left.setColourBlack(false);
+                        if (!parent.isBlack())    isBlack = false;
+                        parent.setColourBlack(true);
+                    } else {                                                            // Left red, right black
+                        if (parent.left.left.isBlack()) {
+                            parent.left.setColourBlack(false);
+                            parent.left.right.setColourBlack(true);
+                            rotateLeft(parent.left);
+                        } else {                                                        // Right red
+                            if (parent.isBlack())   parent.left.left.setColourBlack(true);
+                            else if (!parent.left.right.isBlack()) {
+                                parent.left.left.setColourBlack(true);
+                                parent.left.setColourBlack(false);
+                                parent.setColourBlack(true);
+                            }
+                        }
+                        rotateRight(parent);
+                        isBlack = false;
+                    }
+                } else {                                                                // Case II left
+                    if (parent.right.left.isBlack() && parent.right.right.isBlack()) {  // 2 black children
+                        parent.right.setColourBlack(false);
+                        if (!parent.isBlack())    isBlack = false;
+                        parent.setColourBlack(true);
+                    } else {
+                        if (parent.right.right.isBlack()) {                             // Left red, right black
+                            parent.right.setColourBlack(false);
+                            parent.right.left.setColourBlack(true);
+                            rotateRight(parent.right);
+                        } else {                                                        // Right red
+                            if (parent.isBlack())   parent.right.right.setColourBlack(true);
+                            else if (!parent.right.left.isBlack()) {
+                                parent.right.right.setColourBlack(true);
+                                parent.right.setColourBlack(false);
+                                parent.setColourBlack(true);
+                            }
+                        }
+                        rotateLeft(parent);
+                        isBlack = false;
+                    }
+                }
+                parent.height = Math.max(parent.right.height + 1, parent.left.height + 1);
+                rbNode = parent;
+                parent = parent.parent;
+            }
+            while (rbNode != begin) {
+                rbNode.height = Math.max(rbNode.right.height + 1, rbNode.left.height + 1);
+                rbNode = rbNode.parent;
+            }
+            size--;
+        }
+        return true;
     }
 
     @Override
-    public void search(T node) {
-        System.out.println("Search in RB for "+node);
+    public boolean delete(T node) {
+        long start = System.currentTimeMillis();
+        boolean isDeleted = deleteInternal(node);
+        if (isDeleted) System.out.println("Delete in RB element: " + node);
+        else System.out.println(node + " not found");
+        long end = System.currentTimeMillis();
+        insertionTimeStr+=("Took: " +(end-start) + " ms\n");
+        return isDeleted;
+    }
+
+    @Override
+    public boolean search(T node) {
+        RbNode<T> rbNode = root;
+        boolean found = false;
+        while (rbNode.getValue() != null) {
+            if (rbNode.getValue().compareTo(node) < 0) {
+                rbNode = rbNode.right;
+            } else if (rbNode.getValue().compareTo(node) > 0) {
+                rbNode = rbNode.left;
+            } else {
+                found = true;
+                break;
+            }
+        }
+        System.out.println("Search in RB for " + node + " = " + found);
+        return found;
     }
 
     @Override
     public int getSize() {
-        System.out.println("Getsize in RB");
-        return 0;
+        System.out.println("Get size in RB = " + size);
+        return size;
     }
 
     @Override
     public int getHeight() {
-        System.out.println("GetHeight in RB");
-        return 0;
+        System.out.println("Get height in RB = " + root.height);
+        return root.height;
     }
+
     public void ends() throws IOException {
 
         FileWriter insertionTime, deletionTime;
