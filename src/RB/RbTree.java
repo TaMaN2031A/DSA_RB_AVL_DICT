@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T> {
 
-    String insertionTimeStr ="Hello\n", deletionTimeStr="Hello\n";
+    String insertionTimeStr ="Hello\n", deletionTimeStr="Hello\n", searchTimeStr="Hello\n";
     int size = 0;
     RbNode<T> begin = new RbNode<>(null, null, null, null, 1);
     RbNode<T> root = new RbNode<>(begin, null, null, null, 0);
@@ -134,12 +134,12 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
 
     @Override
     public boolean insert(T node) {
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime();
         boolean isInserted = insertInternal(node);
         if (!isInserted) System.out.println(node + " was already inserted");
         else System.out.println("Insert in RB: " + node);
-        long end = System.currentTimeMillis();
-        insertionTimeStr+=("Took: " + (end-start) + " ms\n");
+        long end = System.nanoTime();
+        insertionTimeStr+=((end-start) + " " + getHeight() + " " + getSize() + "\n");;
         return isInserted;
     }
 
@@ -261,17 +261,18 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
 
     @Override
     public boolean delete(T node) {
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime();
         boolean isDeleted = deleteInternal(node);
         if (isDeleted) System.out.println("Delete in RB element: " + node);
         else System.out.println(node + " not found");
-        long end = System.currentTimeMillis();
-        insertionTimeStr+=("Took: " +(end-start) + " ms\n");
+        long end = System.nanoTime();
+        deletionTimeStr+=((end-start) + " " + getHeight() + " " + getSize() + "\n");
         return isDeleted;
     }
 
     @Override
     public boolean search(T node) {
+        long start = System.nanoTime();
         RbNode<T> rbNode = root;
         boolean found = false;
         while (rbNode.getValue() != null) {
@@ -285,6 +286,8 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
             }
         }
         System.out.println("Search in RB for " + node + " = " + found);
+        long end = System.nanoTime();
+        searchTimeStr+=((end-start) + " " + getHeight() + " " + getSize() + "\n");
         return found;
     }
 
@@ -302,17 +305,20 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
 
     public void ends() throws IOException {
 
-        FileWriter insertionTime, deletionTime;
+        FileWriter insertionTime, deletionTime, searchingTime;
         System.out.println("Writing ");
 
         insertionTime = new FileWriter("insertion_in_rb.txt");
-
         insertionTime.write(insertionTimeStr);
-        System.out.println("Writing done");
-
         insertionTime.close();
         deletionTime = new FileWriter("deletion_in_rb.txt");
         deletionTime.write(deletionTimeStr);
         deletionTime.close();
+        searchingTime = new FileWriter("searching_in_rb.txt");
+        searchingTime.write(searchTimeStr);
+        searchingTime.close();
+
+        System.out.println("Writing done");
+
     }
 }

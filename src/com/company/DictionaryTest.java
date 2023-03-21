@@ -80,11 +80,11 @@ class DictionaryTest {
 
     @Test // Batch inserting different 200, then deleting only 100 of them, checking size, ToBeDone insha'allah
     void batchInsert200ThenBatchDeleteHalfOfThem() throws IOException {
-//        Dictionary dictionary = new Dictionary("RB");
-//        int added = dictionary.BashInsert("F:\\200.txt");
-//        assertEquals(200, added);
-//        int deleted = dictionary.BashDelete("F:\\100.txt");
-//        assertEquals(added-deleted, dictionary.getSize());
+        Dictionary dictionary = new Dictionary("RB");
+        int added = dictionary.BashInsert("F:\\200.txt");
+        assertEquals(200, added);
+        int deleted = dictionary.BashDelete("F:\\100.txt");
+        assertEquals(added-deleted, dictionary.getSize());
 //        Dictionary dictionary2 = new Dictionary("AVL");
 //        int added = dictionary.BashInsert("F:\\200.txt");
 //        assertEquals(200, added);
@@ -119,15 +119,23 @@ class DictionaryTest {
 //        assertEquals(1, removed);
     }
     @Test
-    void testing_The_Time_In_Insertion() throws IOException {
+    void testing_The_Time_In_Insertion_Deletion_Searching() throws IOException {
         Dictionary dictionary = new Dictionary("RB");
         dictionary.BashInsert("F:\\200.txt");
+        String x = "a";
+        for(int i = 0; i < 200; i++)
+        {
+            dictionary.search(x);
+            x += "a";
+        }
+        //dictionary.BashDelete("F:\\200.txt");
         dictionary.ends();
         // NO assert here
 //        Dictionary dictionary2 = new Dictionary("AVL");
 //        dictionary.BashInsert("F:\\200.txt");
 //        dictionary.ends();
     }
+
 
     @Test
     void Searching_ForExisting_Non_Existing_Node() throws IOException {
@@ -140,6 +148,7 @@ class DictionaryTest {
 
     }
 
+    @Test
     void Searching_Non_Existing_Node() throws IOException {
         Dictionary dictionary = new Dictionary("RB");
         dictionary.insert("a");
