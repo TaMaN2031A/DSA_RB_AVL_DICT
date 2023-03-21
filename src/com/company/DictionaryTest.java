@@ -26,7 +26,7 @@ class DictionaryTest {
         dictionary.ends();
         System.out.println(dictionary.getSize());
         assertEquals(added, dictionary.getSize());
-//        Dictionary dictionary = new Dictionary("RB");
+//        Dictionary dictionary = new Dictionary("AVL");
 //        int added = dictionary.BashInsert("F:\\Trialforjava.txt");
 //        dictionary.ends();
 //        System.out.println(dictionary.getSize());
@@ -55,7 +55,7 @@ class DictionaryTest {
         }
         assertEquals(1, dictionary.getSize());
         assertEquals(1, dictionary.getHeight());
-//        Dictionary dictionary = new Dictionary("RB");
+//        Dictionary dictionary = new Dictionary("AVL");
 //        for(int i = 0; i < 4000; i++)
 //        {
 //            dictionary.insert("a");
@@ -113,7 +113,7 @@ class DictionaryTest {
         dictionary.insert("0");
         int removed = dictionary.BashDelete("F:\\0.txt");
         assertEquals(1, removed);
-//        Dictionary dictionary2 = new Dictionary("RB");
+//        Dictionary dictionary2 = new Dictionary("AVL");
 //        dictionary.insert("0");
 //        int removed = dictionary.BashDelete("F:\\0.txt");
 //        assertEquals(1, removed);
