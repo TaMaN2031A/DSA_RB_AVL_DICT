@@ -1,8 +1,5 @@
 package com.company;
 
-import AVL.AvlTree;
-import RB.RbTree;
-
 import java.io.IOException;
 
 public class Main {

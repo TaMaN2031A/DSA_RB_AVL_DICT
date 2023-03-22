@@ -1,7 +1,5 @@
 package com.company;
 
-import RB.RbNode;
-
 import java.io.IOException;
 
 public interface Tree_Interface<T> {

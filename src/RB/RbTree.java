@@ -21,6 +21,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         root.setColourBlack(true);
         leaf.setColourBlack(true);
     }
+
     public void rotateRight(RbNode<T> node) {
         RbNode<T> child = node.left;
         child.parent = node.parent;
@@ -36,6 +37,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         node.height = Math.max(node.right.height + 1, node.left.height + 1);
         child.height = Math.max(child.left.height + 1, child.right.height + 1);
     }
+
     public void rotateLeft(RbNode<T> node) {
         RbNode<T> child = node.right;
         child.parent = node.parent;
@@ -51,6 +53,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         node.height = Math.max(node.left.height + 1, node.right.height + 1);
         child.height = Math.max(child.right.height + 1, child.left.height + 1);
     }
+
     public RbNode<T> searchInternal(T node) {
         RbNode<T> rbNode = root, parent = root;
         while (rbNode.getValue() != null) {
@@ -66,6 +69,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         }
         return parent;
     }
+
     public boolean insertInternal(T node) {
         RbNode<T> parent = searchInternal(node);
         if ((parent.right != leaf && parent.right.getValue().compareTo(node) == 0) || (parent.left != leaf && parent.left.getValue().compareTo(node) == 0)) {
@@ -128,6 +132,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         size++;
         return true;
     }
+
     public RbNode<T> getLeftMostRight(RbNode<T> node) {
         RbNode<T> leftMost = node.right;
         while (leftMost.left != leaf) {
@@ -135,6 +140,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         }
         return leftMost;
     }
+
     public boolean deleteInternal(T node) {
         RbNode<T> parent = searchInternal(node);
         if (parent.right == leaf || parent.right.getValue().compareTo(node) != 0) {
@@ -175,7 +181,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
             rbNode = left ? parent.left : parent.right;
             root = begin.left;
             begin.right = root;
-            if (isBlack && !rbNode.isBlack()) {                                         // Case I
+            if (isBlack && !parent.isBlack()) {                                         // Case I
                 rbNode.setColourBlack(true);
                 isBlack = false;
                 rbNode = parent;
@@ -253,7 +259,7 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         long start = System.nanoTime();
         boolean isInserted = insertInternal(node);
         long end = System.nanoTime();
-        insertionTimeStr+=((end-start) + " " + TreeHeight() + " " + TreeSize() + "\n");;
+        insertionTimeStr+=((end-start) + " " + TreeHeight() + " " + TreeSize() + "\n");
 
         if (!isInserted) {
             System.out.println("The item you are inserting already exists!");
@@ -312,13 +318,14 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         return found;
     }
 
-
     public int TreeSize() {
         return size;
     }
+
     public int TreeHeight() {
         return root.height-1;
     }
+
     public void ends() throws IOException {
 
         FileWriter insertionTime, deletionTime, searchingTime;

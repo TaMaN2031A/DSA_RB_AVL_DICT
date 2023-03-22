@@ -1,27 +1,21 @@
 package com.company;
 
-import RB.RbTree;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.time.Duration;
 
 import static java.lang.Math.log;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.lang.Math;
 class DictionaryTest {
 
     @Test
     void testSizeAfterAdding197DifferentElementIn4000Words() throws IOException {
         Dictionary dictionary = new Dictionary("RB");
-        int added = dictionary.BatchInsert("F:\\Trialforjava.txt");
+        int added = dictionary.BatchInsert("Trialforjava.txt");
         dictionary.ends();
         System.out.println(dictionary.getSize());
-        assertEquals(added, dictionary.getSize());
+        Assertions.assertEquals(added, dictionary.getSize());
 
     }
 
@@ -29,18 +23,18 @@ class DictionaryTest {
     void testCornerCase1RB() throws IOException {
         Dictionary dictionary = new Dictionary("RB");
         dictionary.insert("Test");
-        assertEquals(1,dictionary.getSize());
+        Assertions.assertEquals(1,dictionary.getSize());
         dictionary.delete("Test");
-        assertEquals(0,dictionary.getSize());
+        Assertions.assertEquals(0,dictionary.getSize());
 
     }
     @Test
     void testCornerCase1AVL() throws IOException {
         Dictionary dictionary = new Dictionary("AVL");
         dictionary.insert("Test");
-        assertEquals(1,dictionary.getSize());
+        Assertions.assertEquals(1,dictionary.getSize());
         dictionary.delete("Test");
-        assertEquals(0,dictionary.getSize());
+        Assertions.assertEquals(0,dictionary.getSize());
     }
     @Test // Adding the same node 4000 times checking height and size
     void testCornerCaseTwoRB() throws IOException {
@@ -49,8 +43,8 @@ class DictionaryTest {
         {
             dictionary.insert("a");
         }
-        assertEquals(1, dictionary.getSize());
-        assertEquals(0, dictionary.getHeight());
+        Assertions.assertEquals(1, dictionary.getSize());
+        Assertions.assertEquals(0, dictionary.getHeight());
 
     }
     @Test
@@ -60,50 +54,50 @@ class DictionaryTest {
         {
             dictionary.insert("a");
         }
-        assertEquals(1, dictionary.getSize());
-        assertEquals(0, dictionary.getHeight());
+        Assertions.assertEquals(1, dictionary.getSize());
+        Assertions.assertEquals(0, dictionary.getHeight());
     }
 
     @Test // Batch inserting same Data
     void batchInsertingTheSameDataRB() throws IOException {
         Dictionary dictionary = new Dictionary("RB");
-        int added = dictionary.BatchInsert("F:\\200.txt");
-        assertEquals(200, added);
-        int added2 = dictionary.BatchInsert("F:\\200.txt");
-        assertEquals(0, added2);
+        int added = dictionary.BatchInsert("200.txt");
+        Assertions.assertEquals(200, added);
+        int added2 = dictionary.BatchInsert("200.txt");
+        Assertions.assertEquals(0, added2);
     }
     @Test
     void batchInsertingTheSameDataAVL() throws IOException {
         Dictionary dictionary = new Dictionary("AVL");
-        int added = dictionary.BatchInsert("F:\\200.txt");
-        assertEquals(200, added);
-        int added2 = dictionary.BatchInsert("F:\\200.txt");
-        assertEquals(0, added2);
+        int added = dictionary.BatchInsert("200.txt");
+        Assertions.assertEquals(200, added);
+        int added2 = dictionary.BatchInsert("200.txt");
+        Assertions.assertEquals(0, added2);
     }
 
 
     @Test // Batch inserting different 200, then deleting only 100 of them, checking size, ToBeDone insha'allah
     void batchInsert200ThenBatchDeleteHalfOfThemRB() throws IOException {
         Dictionary dictionary = new Dictionary("RB");
-        int added = dictionary.BatchInsert("F:\\200.txt");
-        assertEquals(200, added);
-        int deleted = dictionary.BatchDelete("F:\\100.txt");
-        assertEquals(added-deleted, dictionary.getSize());
+        int added = dictionary.BatchInsert("200.txt");
+        Assertions.assertEquals(200, added);
+        int deleted = dictionary.BatchDelete("100.txt");
+        Assertions.assertEquals(added-deleted, dictionary.getSize());
     }
     @Test
     void batchInsert200ThenBatchDeleteHalfOfThemAVL() throws IOException {
         Dictionary dictionary = new Dictionary("AVL");
-        int added = dictionary.BatchInsert("F:\\200.txt");
-        assertEquals(200, added);
-        int deleted = dictionary.BatchDelete("F:\\100.txt");
-        assertEquals(added-deleted, dictionary.getSize());
+        int added = dictionary.BatchInsert("200.txt");
+        Assertions.assertEquals(200, added);
+        int deleted = dictionary.BatchDelete("100.txt");
+        Assertions.assertEquals(added-deleted, dictionary.getSize());
     }
 
     // Checking Height is less than 2lgn in RB, less than lgn+1 in AVL
     @Test
     void checkHeightTestCaseRB() throws IOException {
         Dictionary dictionary = new Dictionary("RB");
-        int added = dictionary.BatchInsert("F:\\200.txt");
+        dictionary.BatchInsert("200.txt");
         System.out.println(dictionary.getHeight());
         System.out.println(2*(log(dictionary.getSize())/log(2)));
         Assertions.assertTrue(dictionary.getHeight()<=2*(log(dictionary.getSize())/log(2)));
@@ -112,7 +106,7 @@ class DictionaryTest {
     @Test
     void checkHeightTestCaseAVL() throws IOException {
         Dictionary dictionary = new Dictionary("AVL");
-        int added = dictionary.BatchInsert("F:\\200.txt");
+        dictionary.BatchInsert("200.txt");
         System.out.println(dictionary.getHeight());
         System.out.println(2*(log(dictionary.getSize())/log(2)));
         Assertions.assertTrue(dictionary.getHeight()<=log(dictionary.getSize())/log(2)+1);
@@ -122,23 +116,23 @@ class DictionaryTest {
     void deletingSameData200TimesAfterAddingItRB() throws IOException {
         Dictionary dictionary = new Dictionary("RB");
         dictionary.insert("0");
-        int removed = dictionary.BatchDelete("F:\\0.txt");
+        int removed = dictionary.BatchDelete("0.txt");
         dictionary.ends();
-        assertEquals(1, removed);
+        Assertions.assertEquals(1, removed);
     }
 
     @Test
     void deletingSameData200TimesAfterAddingItAVL() throws IOException {
         Dictionary dictionary = new Dictionary("AVL");
         dictionary.insert("0");
-        int removed = dictionary.BatchDelete("F:\\0.txt");
-        assertEquals(1, removed);
+        int removed = dictionary.BatchDelete("0.txt");
+        Assertions.assertEquals(1, removed);
     }
 
     @Test
     void testing_The_Time_In_Insertion_Deletion_SearchingRB() throws IOException {
         Dictionary dictionary = new Dictionary("RB");
-        dictionary.BatchInsert("F:\\200.txt");
+        dictionary.BatchInsert("200.txt");
         String x = "a", y = "b";
         for(int i = 0; i < 200; i++)
         {
@@ -154,15 +148,15 @@ class DictionaryTest {
                 dictionary.delete(y);
             }
         }
-        dictionary.BatchInsert("F:\\200.txt");
-        dictionary.BatchDelete("F:\\200.txt");
+        dictionary.BatchInsert("200.txt");
+        dictionary.BatchDelete("200.txt");
         dictionary.ends();
     }
 
     @Test
     void testing_The_Time_In_Insertion_Deletion_SearchingAVL() throws IOException {
         Dictionary dictionary = new Dictionary("AVL");
-        dictionary.BatchInsert("F:\\200.txt");
+        dictionary.BatchInsert("200.txt");
         String x = "a", y = "b";
         for(int i = 0; i < 200; i++)
         {
@@ -178,8 +172,8 @@ class DictionaryTest {
                 dictionary.delete(y);
             }
         }
-        dictionary.BatchInsert("F:\\200.txt");
-        dictionary.BatchDelete("F:\\200.txt");
+        dictionary.BatchInsert("200.txt");
+        dictionary.BatchDelete("200.txt");
         dictionary.ends();
     }
 
