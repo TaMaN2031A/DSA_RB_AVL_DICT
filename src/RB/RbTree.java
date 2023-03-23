@@ -196,7 +196,10 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
                     parent.setColourBlack(false);
                     rotateLeft(parent);
                 } if (parent.right == rbNode){                                          // Case II right
-                    if (parent.left.left.isBlack() && parent.left.right.isBlack()) {    // 2 black children
+                    if (parent.left == leaf) {
+                        isBlack = false;
+                        parent.setColourBlack(true);
+                    } else if (parent.left.left.isBlack() && parent.left.right.isBlack()) {    // 2 black children
                         parent.left.setColourBlack(false);
                         if (!parent.isBlack())    isBlack = false;
                         parent.setColourBlack(true);
@@ -217,7 +220,10 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
                         isBlack = false;
                     }
                 } else {                                                                // Case II left
-                    if (parent.right.left.isBlack() && parent.right.right.isBlack()) {  // 2 black children
+                    if (parent.right == leaf) {
+                        isBlack = false;
+                        parent.setColourBlack(true);
+                    } else if (parent.right.left.isBlack() && parent.right.right.isBlack()) {  // 2 black children
                         parent.right.setColourBlack(false);
                         if (!parent.isBlack())    isBlack = false;
                         parent.setColourBlack(true);
@@ -262,10 +268,10 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         insertionTimeStr+=((end-start) + " " + TreeHeight() + " " + TreeSize() + "\n");
 
         if (!isInserted) {
-            System.out.println("The item you are inserting already exists!");
+          //  System.out.println("The item you are inserting already exists!");
             return 0;
         }else{
-            System.out.println(node+" added Successfully!");
+           // System.out.println(node+" added Successfully!");
             return 1;
         }
 
@@ -278,13 +284,13 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
         long end = System.nanoTime();
         deletionTimeStr+=((end-start) + " " + TreeHeight() + " " + TreeSize() + "\n");
         if (isDeleted){
-            System.out.println(node+" deleted Successfully!");
+           // System.out.println(node+" deleted Successfully!");
             return 1;
         }else {
             if(size==0){
-                System.out.println("Tree is Empty!");
+               // System.out.println("Tree is Empty!");
             }else{
-                System.out.println("The key you are trying to delete doesn't exist!");
+              //  System.out.println("The key you are trying to delete doesn't exist!");
             }
         }
         return 0;
@@ -306,12 +312,12 @@ public class RbTree<T extends Comparable<? super T>> implements Tree_Interface<T
             }
         }
         if(size==0){
-            System.out.println("Tree is Empty!");
+         //   System.out.println("Tree is Empty!");
         }
         if(found){
-            System.out.println(node+" found Successfully!");
+          //  System.out.println(node+" found Successfully!");
         }else{
-            System.out.println("Key not found!");
+           // System.out.println("Key not found!");
         }
         long end = System.nanoTime();
         searchTimeStr+=((end-start) + " " + TreeHeight() + " " + TreeSize() + "\n");
